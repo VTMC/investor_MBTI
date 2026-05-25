@@ -9,26 +9,40 @@
 </head>
 <body>
     <header>
-        <h1>데이터 분석 서비스</h1>
+        <h1>Investor MBTI Analyzer</h1>
     </header>
 
     <main>
         <section class="selectors">
-            <h4>Scenario</h4>
+            <h3>Scenario</h3>
             <select name="option1">
-                <option>Aggressive Growth</option>
-                <option>Stability</option>
-                <option></option>
             </select>
             <!-- <select name="option2"><option>선택사항 2</option></select> -->
         </section>
 
         <section class="inputs">
-            <input type="number" placeholder="값 1">
-            <input type="number" placeholder="값 2">
-            <input type="number" placeholder="값 3">
-            <input type="number" placeholder="값 4">
+            <section class="inputs_inner">
+                <h3>R</h3>
+                <input id="r_input" type="number" placeholder="00%" readonly>
+            </section>
+
+            <section class="inputs_inner">
+                <h3>S</h3>
+                <input id="s_input" type="number" placeholder="00%" readonly>
+            </section>
+            
+            <section class="inputs_inner">
+                <h3>C</h3>
+                <input id="c_input" type="number" placeholder="00%" readonly>
+            </section>
+
+            <section class="inputs_inner">
+                <h3>H</h3>
+                <input id="h_input" type="number" placeholder="00%" readonly>
+            </section>
         </section>
+
+        <p class="description_of_scenario">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
 
         <button id="start-btn">START</button>
 
@@ -47,6 +61,6 @@
         </section>
     </main>
 
-    <script src="./jsFiles/index.js" />
+    <script src="./jsFiles/index.js"></script>
 </body>
 </html>
