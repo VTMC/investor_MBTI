@@ -1,5 +1,48 @@
-body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-header { margin-bottom: 30px; }
+:root {
+    color-scheme: light;
+}
+
+body { font-family: -apple-system, BlinkMacSystemFont, "Sogoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; 
+    display: flex;  flex-direction: column;  align-items: center;  padding: 20px; }
+
+header {
+     /* display:flex; align-items: center; margin-bottom: 30px;  */
+     width: 100%; padding: 2%;
+
+     display:flex; justify-content: center; align-items: center;
+
+     box-sizing: border-box;
+}
+
+header h1 {
+    margin: 0;
+
+    font-size: 2.5em;
+    font-weight: bold;
+    letter-spacing: -0.5px;
+
+    color: #1f2937;
+    text-align: center;
+}
+
+.main-contents{
+    padding: 2%;
+    background: #EEEEEE;
+
+    /*하단 라운드*/
+    border-radius: 0 0 30px 30px; 
+
+    /*주변 그림자 효과*/
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+
+    /*모바일 최적화*/
+    box-sizing: border-box;
+    width: 100%;
+
+    /*부드러운 느낌 추가*/
+    overflow: hidden;
+}
+
 .selectors{ display : flex; gap: 10px; margin-bottom: 20px; flex-direction: column; align-items: center; flex-wrap: wrap;}
 .inputs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
 .inputs_inner { display: flex; flex-direction: column; align-items: center; }
@@ -13,6 +56,220 @@ th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
 
 .action-buttons { display: flex; gap: 10px; justify-content: center; }
 .hidden { display: none; } /* 결과 버튼 클릭 시 JS로 제거 */
+
+.button-container {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#start-btn{
+    font-size: large;
+    font-weight: bold;
+    border-radius : 12px;
+}
+
+/* 다크 모드 대응 */
+.theme-toggle-btn {
+    border: 3px solid rgba(0, 0, 0, 0.85);
+    border-radius: 20%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: var(--card-bg);
+    box-shadow: 0 4px 12px var(--shadow-color);
+
+    cursor: pointer;
+
+     transition: 
+        border-color 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+    border-color: rgba(0, 0, 0, 1);
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.28),
+        inset 0 3px 8px rgba(0,0,0,0.18);
+}
+
+.theme-toggle-btn:active{
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+.theme-toggle-btn h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+.theme-icon {
+    position: relative;
+    display: inline-block;
+}
+
+/*Dark Mode*/
+html.dark-mode{
+    body {
+        background: #111827;
+        color: #f9fafb;
+    }
+
+    header h1 {
+        color: #f9fafb;
+    }
+
+    .main-contents {
+        overflow: visible;
+        background: #1f2937;
+        color: #f9fafb;
+
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .loading-box {
+        background: #1f2937;
+        color: #f9fafb;
+
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+    }
+
+    .loading-overlay {
+        background: rgba(0, 0, 0, 0.65);
+    }
+
+    input,
+    select,
+    textarea {
+        background: #111827;
+        color: #f9fafb;
+        border: 1px solid #374151;
+    }
+
+    button {
+        background: #2563eb;
+        color: white;
+        border: none;
+    }
+
+    .theme-toggle-btn {
+        border: 3px solid rgba(255, 255, 255, 1);
+
+        background: #1f2937;
+
+        box-shadow:
+            0 0 0 1px rgba(255, 255, 255, 1),
+            0 0 10px 3px rgba(255, 255, 255, 0.6),
+            0 0 15px 8px rgba(255, 255, 255, 0.2);
+
+        transition:
+            border-color 0.2s ease,
+            transform 0.15s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .theme-toggle-btn:hover {
+        border-color: rgba(255, 255, 255, 1);
+
+        box-shadow:
+            0 0 0 1px rgba(255, 255, 255, 1),
+            0 0 16px 5px rgba(255, 255, 255, 0.7),
+            0 0 36px 12px rgba(255, 255, 255, 0.25),
+            inset 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .theme-toggle-btn:active {
+        transform: scale(0.95);
+
+        box-shadow:
+            0 0 0 1px rgba(255, 255, 255, 1),
+            0 0 12px 4px rgba(255, 255, 255, 1),
+            0 0 24px 8px rgba(255, 255, 255, 1),
+            inset 0 0 12px rgba(255, 255, 255, 1);
+    }
+}
+
+
+/*For loading bar*/
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: rgba(0, 0, 0, 0.5);
+
+    display: flex; /* 기본적으로 숨김 */
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999; /* 다른 요소들보다 위에 표시 */
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; /* 클릭 방지 */
+
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.loading-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto; /* 클릭 허용 */
+}
+
+.loading-box {
+    background: white;
+    padding: 24px 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.loading-overlay.show .loading-box {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+
+  border: 4px solid #ddd;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px auto;
+}
+
+.loading-text {
+  font-size: 16px;
+  font-weight: 500;
+  font-style: bold;
+  color: #333;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 
 /* 모바일 대응 */
 @media (max-width: 600px) {
