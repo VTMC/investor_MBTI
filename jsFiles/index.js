@@ -11,6 +11,8 @@ var cInputElement = document.getElementById("c_input");
 var hInputElement = document.getElementById("h_input");
 var scenarioDescriptor = document.querySelector(".description_of_scenario");
 
+var startButton = document.getElementById("start-btn");
+
 //themeToggleButton (Dark Mode / Light Mode)
 var themeToggleButton = document.getElementsByClassName("theme-toggle-btn")[0];
 var themeIcon = themeToggleButton.querySelector("h1");
@@ -189,9 +191,18 @@ function toggleTheme() {
   });
 }
 
+function startModel(){
+  // 모델 실행 로직 추가
+  // 결과 창 표시
+  startButton.addEventListener("click", function() {
+    document.getElementsByClassName("result-contents")[0].classList.add("show");
+  });
+}
+
 async function main(){
   initTheme();
   toggleTheme();
+  startModel();
 
    try {
     showLoading();

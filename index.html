@@ -58,21 +58,49 @@
             <div class="button-container">
                 <button id="start-btn">START</button>
             </div>
-
-            <section id="result-section" class="hidden">
-                <table>
-                    <thead><tr><th>항목</th><th>결과 (%)</th></tr></thead>
-                    <tbody>
-                        <tr><td>항목 1</td><td>85%</td></tr>
-                        <tr><td>항목 2</td><td>40%</td></tr>
-                        </tbody>
-                </table>
-                <div class="action-buttons">
-                    <button>공유하기</button>
-                    <button>저장하기</button>
-                </div>
-            </section>
         </main>
+    </div>
+
+    <div class="result-contents" >
+        <section id="result-section"> <!--class="hidden"-->
+            <h1>Result</h1>
+            <table>
+                <thead><tr>
+                    <th>SPY</th>
+                    <th>QQQ</th>
+                    <th>QLD</th>
+                    <th>JEPI</th>
+                    <th>SCHD</th>
+                    <th>VNQ</th>
+                    <th>TLT</th>
+                </tr></thead>
+                <tbody><tr>
+                    <td><p id="SPY-value">1</p></td>
+                    <td><p id="QQQ-value">2</p></td>
+                    <td><p id="QLD-value">3</p></td>
+                    <td><p id="JEPI-value">4</p></td>
+                    <td><p id="SCHD-value">5</p></td>
+                    <td><p id="VNQ-value">6</p></td>
+                    <td><p id="TLT-value">7</p></td>
+                </tr></tbody>
+            </table>
+
+            <div class="total-result-div">
+                <div class="objz-div">
+                    <h3>Objective-Z : </h3>
+                    <p id="objective-z-value">temp_objZ</p>
+                </div>
+                <div class="total-weight-div">
+                    <h3>Total Weight : </h3>
+                    <p id="total-weight-value">temp_objZ</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="action-buttons">
+            <button>공유하기</button>
+            <button>저장하기</button>
+        </div>
     </div>
 
     <script src="./jsFiles/index.js"></script>
