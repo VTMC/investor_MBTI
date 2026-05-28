@@ -2,8 +2,7 @@
     color-scheme: light;
 }
 
-body { font-family: -apple-system, BlinkMacSystemFont, "Sogoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; 
-    display: flex;  flex-direction: column;  align-items: center;  padding: 20px; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Sogoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 
 header {
      /* display:flex; align-items: center; margin-bottom: 30px;  */
@@ -23,6 +22,10 @@ header h1 {
 
     color: #1f2937;
     text-align: center;
+}
+
+main{
+    display: flex;  flex-direction: column;  align-items: center;  padding: 20px;
 }
 
 .main-contents{
@@ -61,7 +64,7 @@ header h1 {
     width: 80%;
 
     /*부드러운 느낌 추가*/
-    overflow: hidden;
+    overflow: visible;
 
     z-index: 0;
 
@@ -84,8 +87,8 @@ header h1 {
 .selectors{ display : flex; gap: 10px; margin-bottom: 20px; flex-direction: column; align-items: center; flex-wrap: wrap;}
 .inputs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
 .inputs_inner { display: flex; flex-direction: column; align-items: center; }
-input{ padding: 10px; width:120px;}
-select { padding: 10px; width:auto; }
+input{ width:120px; height: 5vh;}
+select {width:auto; height: 5vh;}
 button { padding: 10px 20px; cursor: pointer; }
 
 #result-section {
@@ -162,7 +165,51 @@ th, td { border: 1px solid #151515; padding: 8px; text-align: center; }
     transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* 결과 항목 설명글 */
+.desc-text {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.desc-text::after {
+    content: attr(data-desc);
+
+    position: absolute;
+    left: 50%;
+    bottom: 120%;
+    transform: translateX(-50%);
+
+    width: max-content;
+    max-width: 240px;
+
+    background: #E2E8F0;
+    color: #0F172A;
+    padding: 8px 10px;
+    border-radius: 8px;
+
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: pre-line; /*== 줄바꿈을 의미*/
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    z-index: 9999;
+
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.desc-text:hover::after,
+.desc-text:active::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+}
+
 /*For loading bar*/
+.save-overlay,
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -186,12 +233,14 @@ th, td { border: 1px solid #151515; padding: 8px; text-align: center; }
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
+.save-overlay.show,
 .loading-overlay.show {
     opacity: 1;
     visibility: visible;
     pointer-events: auto; /* 클릭 허용 */
 }
 
+.save-box,
 .loading-box {
     background: white;
     padding: 24px 30px;
@@ -205,6 +254,7 @@ th, td { border: 1px solid #151515; padding: 8px; text-align: center; }
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+.save-overlay.show .save-box,
 .loading-overlay.show .loading-box {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -322,6 +372,7 @@ html.dark-mode{
         transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     }
 
+    .save-box,
     .loading-box {
         background: #1f2937;
         color: #f9fafb;
@@ -329,6 +380,7 @@ html.dark-mode{
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
     }
 
+    .save-overlay,
     .loading-overlay {
         background: rgba(0, 0, 0, 0.65);
     }
@@ -389,6 +441,12 @@ html.dark-mode{
         box-shadow: 0 6px 18px rgba(96, 165, 250, 0.5);
         transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     }
+
+    .desc-text::after {
+        background: #111827;
+        color: #f9fafb;
+    }
+
 
     .spinner {
         width: 40px;

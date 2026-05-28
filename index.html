@@ -5,24 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>데이터 분석기</title>
     <link rel="stylesheet" href="style.css">
-
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-box">
             <div class="spinner"></div>
-            <div class="loading-text">Loading data...</div>
+            <p class="loading-text">Loading data...</p>
         </div>
     </div>
 
-    <div class="main-contents">
-        <button class="theme-toggle-btn"><h1>☀️</h1></button>
+    <div id="saveOverlay" class="save-overlay">
+        <div class="save-box">
+            <h2>어떤 형태로 데이터를 저장합니까?</h2>
+            <div class="action-buttons">
+                <button id="save-img-format-btn">이미지(.jpg)</button>
+                <button id="save-text-format-btn">글(.txt)</button>
+            </div>
+        </div>
+    </div>
 
-        <header>
-            <h1>Investor MBTI Analyzer</h1>
-        </header>
+    <main>
+        <div class="main-contents">
+            <button class="theme-toggle-btn"><h1>☀️</h1></button>
 
-        <main>
+            <header>
+                <h1>Investor MBTI Analyzer</h1>
+            </header>
+
             <section class="selectors">
                 <h3>Scenario</h3>
                 <select name="option1">
@@ -32,7 +42,7 @@
 
             <section class="inputs">
                 <section class="inputs_inner">
-                    <h3>R (수익성)</h3>
+                    <h3>R (기대수익률)</h3>
                     <input id="r_input" type="number" placeholder="00%" readonly>
                 </section>
 
@@ -40,7 +50,7 @@
                     <h3>S (안정성)</h3>
                     <input id="s_input" type="number" placeholder="00%" readonly>
                 </section>
-                
+                    
                 <section class="inputs_inner">
                     <h3>C (현금흐름)</h3>
                     <input id="c_input" type="number" placeholder="00%" readonly>
@@ -58,51 +68,54 @@
             <div class="button-container">
                 <button id="start-btn">START</button>
             </div>
-        </main>
-    </div>
-
-    <div class="result-contents" >
-        <section id="result-section"> <!--class="hidden"-->
-            <h1>Result</h1>
-            <table>
-                <thead><tr>
-                    <th>SPY</th>
-                    <th>QQQ</th>
-                    <th>QLD</th>
-                    <th>JEPI</th>
-                    <th>SCHD</th>
-                    <th>VNQ</th>
-                    <th>TLT</th>
-                </tr></thead>
-                <tbody><tr>
-                    <td><p id="SPY-value">1</p></td>
-                    <td><p id="QQQ-value">2</p></td>
-                    <td><p id="QLD-value">3</p></td>
-                    <td><p id="JEPI-value">4</p></td>
-                    <td><p id="SCHD-value">5</p></td>
-                    <td><p id="VNQ-value">6</p></td>
-                    <td><p id="TLT-value">7</p></td>
-                </tr></tbody>
-            </table>
-
-            <div class="total-result-div">
-                <div class="objz-div">
-                    <h3>Objective-Z : </h3>
-                    <p id="objective-z-value">temp_objZ</p>
-                </div>
-                <div class="total-weight-div">
-                    <h3>Total Weight : </h3>
-                    <p id="total-weight-value">temp_objZ</p>
-                </div>
-            </div>
-        </section>
-
-        <div class="action-buttons">
-            <button>공유하기</button>
-            <button>저장하기</button>
         </div>
-    </div>
 
-    <script src="./jsFiles/index.js"></script>
+        <div class="result-contents" >
+            <section id="result-section">
+                <h1>Result</h1>
+                <table>
+                    <thead><tr>
+                        <th><p class="desc-text" data-desc="역할 : 미국 대표시장&#10;자산 성격 : Basic Growth">SPY</p></th>
+                        <th><p class="desc-text" data-desc="역할 : Nasdaq-100 성장주&#10;자산 성격 : High Growth">QQQ</p></th>
+                        <th><p class="desc-text" data-desc="역할 : Nasdaq-100 2배 레버리지&#10;자산 성격 : Aggressive Growth">QLD</p></th>
+                        <th><p class="desc-text" data-desc="역할 : 인컴·분배금&#10;자산 성격 : Cashflow">JEPI</p></th>
+                        <th><p class="desc-text" data-desc="역할 : 배당성장&#10;자산 성격 : Dividend Growth">SCHD</p></th>
+                        <th><p class="desc-text" data-desc="역할 : 리츠·부동산&#10;자산 성격 : Real Estate">VNQ</p></th>
+                        <th><p class="desc-text" data-desc="역할 : 장기국채&#10;자산 성격 : Bond Defense">TLT</p></th>
+                        <th><p class="desc-text" data-desc="역할 : 금·헤지&#10;자산 성격 : Gold Hedge">IAU</p></th>
+                    </tr></thead>
+                    <tbody><tr>
+                        <td><p id="SPY-value">1</p></td>
+                        <td><p id="QQQ-value">2</p></td>
+                        <td><p id="QLD-value">3</p></td>
+                        <td><p id="JEPI-value">4</p></td>
+                        <td><p id="SCHD-value">5</p></td>
+                        <td><p id="VNQ-value">6</p></td>
+                        <td><p id="TLT-value">7</p></td>
+                        <td><p id="IAU-value">8</p></td>
+                    </tr></tbody>
+                </table>
+
+                <div class="total-result-div">
+                    <div class="objz-div">
+                        <h3 class="desc-text" data-desc="포토폴리오 총점">Objective-Z : </h3>
+                        <p id="objective-z-value">temp_objZ</p>
+                    </div>
+                    <div class="total-weight-div">
+                        <h3 class="desc-text" data-desc="총 비율">Total Weight : </h3>
+                        <p id="total-weight-value">temp_total_weight</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="action-buttons">
+                <button id="restart_btn">재실행</button>
+                <button id="share_btn">공유하기</button>
+                <button id="save_btn">저장하기</button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="./jsFiles/index.js"></script>
 </body>
 </html>

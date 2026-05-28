@@ -1,3 +1,6 @@
+import { getDateString } from "./util.js";
+import { getTxtResult } from "./util.js";
+
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyauDmWhToMpGQQPQQIXVGVQubbyZH3Xut4G8Y8C7gKULLOCl4o3bNxvGqWwU1zD6eqhA/exec";
 
 var scenarioData;
@@ -12,10 +15,26 @@ var hInputElement = document.getElementById("h_input");
 var scenarioDescriptor = document.querySelector(".description_of_scenario");
 
 var startButton = document.getElementById("start-btn");
+var restartButton = document.getElementById("restart_btn");
+var shareButton = document.getElementById("share_btn");
+var saveButton = document.getElementById("save_btn");
+var saveImgButton = document.getElementById("save-img-format-btn");
+var saveTxtButton = document.getElementById("save-text-format-btn");
 
 //themeToggleButton (Dark Mode / Light Mode)
 var themeToggleButton = document.getElementsByClassName("theme-toggle-btn")[0];
 var themeIcon = themeToggleButton.querySelector("h1");
+
+var spyValueP = document.getElementById("SPY-value");
+var qqqValueP = document.getElementById("QQQ-value");
+var qldValueP = document.getElementById("QLD-value");
+var jepiValueP = document.getElementById("JEPI-value");
+var schdValueP = document.getElementById("SCHD-value");
+var vnqValueP = document.getElementById("VNQ-value");
+var tltValueP = document.getElementById("TLT-value");
+var iauValueP = document.getElementById("IAU-value");
+var objzValueP = document.getElementById("objective-z-value");
+var totalWeightValueP = document.getElementById("total-weight-value");
 
 function doGet() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -117,12 +136,26 @@ async function getScenario() {
 //   }
 // }
 
-function showLoading() {
+function showLoadingBox(loadingStr) { 
   document.getElementById("loadingOverlay").classList.add("show");
+
+  if(loadingStr != null && typeof loadingStr === "string"){
+    var loadingText = document.getElementsByClassName("loading-text")[0];
+
+    loadingText.textContent = loadingStr
+  }
 }
 
-function hideLoading() {
+function hideLoadingBox() {
   document.getElementById("loadingOverlay").classList.remove("show");
+}   
+
+function showSaveFormatDataBox() {
+  document.getElementById("saveOverlay").classList.add("show");
+}
+
+function hideSaveFormatDataBox(){
+  document.getElementById("saveOverlay").classList.remove("show");
 }
 
 function applyTheme(theme) {
@@ -140,19 +173,19 @@ function applyTheme(theme) {
   console.log("html class:", htmlElement.className);
 }
 
-function applyTheme(theme) {
-  htmlElement.classList.remove("dark-mode", "light-mode");
+// function applyTheme(theme) {
+//   htmlElement.classList.remove("dark-mode", "light-mode");
 
-  if (theme === "dark") {
-    htmlElement.classList.add("dark-mode");
-    themeIcon.textContent = "🌙";
-    localStorage.setItem("theme", "dark");
-  } else if (theme === "light") {
-    htmlElement.classList.add("light-mode");
-    themeIcon.textContent = "☀️";
-    localStorage.setItem("theme", "light");
-  }
-}
+//   if (theme === "dark") {
+//     htmlElement.classList.add("dark-mode");
+//     themeIcon.textContent = "🌙";
+//     localStorage.setItem("theme", "dark");
+//   } else if (theme === "light") {
+//     htmlElement.classList.add("light-mode");
+//     themeIcon.textContent = "☀️";
+//     localStorage.setItem("theme", "light");
+//   }
+// }
 
 function initTheme() {
   var savedTheme = localStorage.getItem("theme");
@@ -191,26 +224,146 @@ function toggleTheme() {
   });
 }
 
-function startModel(){
-  // 모델 실행 로직 추가
-  // 결과 창 표시
-  startButton.addEventListener("click", function() {
-    document.getElementsByClassName("result-contents")[0].classList.add("show");
+function setActiveButtonsFeature(){
+  restartButton.addEventListener("click", function (){
+    location.reload();
+  });
+
+  shareButton.addEventListener("click", function() {
+
+  });
+
+  saveButton.addEventListener("click", function() {
+    showSaveFormatDataBox();
+
+    saveImgButton.addEventListener("click", function() {
+      hideSaveFormatDataBox();
+      
+      saveResultAsImage();
+    });
+
+    saveTxtButton.addEventListener("click", function() {
+      hideSaveFormatDataBox();
+
+      saveResultAsTxt();
+    });
+  });
+
+  startButton.addEventListener("click", function () {
+    startModel();
   });
 }
 
+async function saveResultAsImage(){
+  const target = document.querySelector("main");
+
+  if(!target){
+    alert("Can't find capture Area!");
+    return;
+  }
+
+  showLoadingBox("saving image...");
+
+  try{
+    const canvas = await html2canvas(target, {
+        backgroundColor: "#ffffff",
+        scale: Math.max(window.devicePixelRatio || 1,2),
+        useCORS: true,
+        // 스크롤 위치 보정
+        scrollX: 0,
+        scrollY: -window.scrollY
+    });
+
+    const imageUrl = canvas.toDataURL("image/jpg");
+
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = `${getDateString()}_investor_MBTI_Analyzer_Result.jpg`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+  } catch (error) {
+    console.error(error);
+    alert("이미지 저장 중 오류가 발생했습니다.");
+  } finally {
+    hideLoadingBox();
+  }
+}
+
+function saveResultAsTxt(){
+  var resultText = "";
+
+  resultText = getTxtResult(
+    selectElement.value,
+    rInputElement.value,
+    sInputElement.value,
+    cInputElement.value,
+    hInputElement.value,
+    spyValueP.textContent,
+    qqqValueP.textContent,
+    qldValueP.textContent,
+    jepiValueP.textContent,
+    schdValueP.textContent,
+    vnqValueP.textContent,
+    tltValueP.textContent,
+    iauValueP.textContent,
+    objzValueP.textContent,
+    totalWeightValueP.textContent
+  );
+
+  if(!resultText || resultText.trim === ""){
+    alert("Text data is empty.");
+    return;
+  }
+
+  showLoadingBox("saving txt...");
+
+  try{
+    const fileName = `${getDateString()}_investor_MBTI_Analyzer_Result.txt`;
+
+    const blob = new Blob(["\uFEFF" + resultText], {
+      type: "text/plain;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href=url;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }catch(error){
+    console.error(error);
+    alert("문서 파일 저장 중 오류가 발생했습니다.");
+  } finally {
+    hideLoadingBox();
+  }
+}
+
+function startModel(){
+  // 모델 실행 로직 추가
+  // 결과 창 표시
+  document.getElementsByClassName("result-contents")[0].classList.add("show");
+}
+
 async function main(){
+  showLoadingBox();
   initTheme();
   toggleTheme();
-  startModel();
+  setActiveButtonsFeature();
 
    try {
-    showLoading();
     await getScenario();
   } catch (error) {
     console.error("main error:", error);
   } finally {
-    hideLoading();
+    hideLoadingBox();
   }
 
   // await getScenario();
