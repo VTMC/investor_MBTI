@@ -6,6 +6,7 @@
     <title>데이터 분석기</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/javascript-lp-solver/prod/solver.js"></script>
 </head>
 <body>
     <div id="loadingOverlay" class="loading-overlay">
@@ -34,7 +35,7 @@
             </header>
 
             <section class="selectors">
-                <h3>Scenario</h3>
+                <h3 class="desc-text" data-desc="자신에게 맞는 시나리오를 선택하십시오.&#10;(custom : 사용자가 직접 값 입력)">Scenario</h3>
                 <select name="option1">
                 </select>
                 <!-- <select name="option2"><option>선택사항 2</option></select> -->
@@ -42,22 +43,22 @@
 
             <section class="inputs">
                 <section class="inputs_inner">
-                    <h3>R (기대수익률)</h3>
+                    <h3 class="desc-text" data-desc="성장성 : 장기적으로 얼마나 성장 가능한가">R (기대수익률)</h3>
                     <input id="r_input" type="number" placeholder="00%" readonly>
                 </section>
 
                 <section class="inputs_inner">
-                    <h3>S (안정성)</h3>
+                    <h3 class="desc-text" data-desc="위험관리 : 변동성과 낙폭이 얼마나 작은가">S (안정성)</h3>
                     <input id="s_input" type="number" placeholder="00%" readonly>
                 </section>
                     
                 <section class="inputs_inner">
-                    <h3>C (현금흐름)</h3>
+                    <h3 class="desc-text" data-desc="인컴 : 분배금이 얼마나 높고 안정적인가">C (현금흐름)</h3>
                     <input id="c_input" type="number" placeholder="00%" readonly>
                 </section>
 
                 <section class="inputs_inner">
-                    <h3>H (방어성)</h3>
+                    <h3 class="desc-text" data-desc="헤지·방어 : 하락장에서 얼마나 잘 버티는가">H (방어성)</h3>
                     <input id="h_input" type="number" placeholder="00%" readonly>
                 </section>
             </section>
