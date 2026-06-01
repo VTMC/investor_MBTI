@@ -14,8 +14,8 @@ const ETF_ORDER = ["SPY", "QQQ", "QLD", "JEPI", "SCHD", "VNQ", "TLT", "IAU"];
  * 현재 최종 프로젝트 기준
  */
 const DEFAULT_PARAMS = {
-  totalWeight = 1.0,                                    //== Total Weight : 각 x_i wiehgt 합이 1이여야 한다.
-  nonNegative = 0,                                      //== Non-negative : 각 x_i weight 항목이 음수이면 안 됨을 의미
+  totalWeight: 1.0,                                    //== Total Weight : 각 x_i wiehgt 합이 1이여야 한다.
+  nonNegative: 0,                                      //== Non-negative : 각 x_i weight 항목이 음수이면 안 됨을 의미
   maxSingleWeight: 0.30,                                //== Max SingleETF
   maxQldWeight: 0.15,                                   //== QLD Max
 
@@ -49,6 +49,8 @@ const DEFAULT_PARAMS = {
   dividendIncomeMaxCashflowCoef: 0.35,                  //==
   dividendIncomeMaxStabilityCoef: 0.20                  //==
 };
+
+var resultPercentageTable, resultStatusAfterSolver;
 
 /**
  * 시나리오 가중치를 0~1 범위로 변환
@@ -307,9 +309,9 @@ function optimizePortfolio(scores, scenario, params = DEFAULT_PARAMS) {
     );
   }
 
-  const scenarioWeights = normalizeScenarioWeights(scenario);
-  const compositeScores = calculateCompositeScores(scores, scenarioWeights);
-  const model = buildLpModel(scores, scenario, params);
+  const scenarioWeights = normalizeScenarioWeights(scenario);                     //scenario R/S/C/H Percentage
+  const compositeScores = calculateCompositeScores(scores, scenarioWeights);      //각 ETF별 종합점수 P_i 계산. P_i = wR * R_i + wS * S_i + wC * C_i + wH * H_i
+  const model = buildLpModel(scores, scenario, params);                           //LP 모델 생성. 계산하기 위한 모델 생성.
 
   const solution = solver.Solve(model);
 
@@ -321,13 +323,13 @@ function optimizePortfolio(scores, scenario, params = DEFAULT_PARAMS) {
     };
   }
 
-  const weights = {};
+  const weights = {};                                                             //weights == x_i_weight 
 
   ETF_ORDER.forEach((ticker) => {
     weights[ticker] = Number(solution[ticker] || 0);
   });
 
-  const weightsPercent = {};
+  const weightsPercent = {};                                                     //weightsPercent == x_i_weight to percentage
 
   ETF_ORDER.forEach((ticker) => {
     weightsPercent[ticker] = weights[ticker] * 100;
@@ -340,13 +342,25 @@ function optimizePortfolio(scores, scenario, params = DEFAULT_PARAMS) {
     params
   );
 
+  const p_i_weights_multipliedValues = Object.fromEntries(
+    ETF_ORDER.map((ticker) => {
+      return [
+        ticker, 
+        {
+          value : compositeScores[ticker] * weights[ticker]
+        }
+      ];
+    })
+  );
+
   return {
     feasible: true,
-    result: Number(solution.result || 0),
+    objective_Z: Number(solution.result || 0),
     weights,
     weightsPercent,
     compositeScores,
     constraintCheck,
+    results : p_i_weights_multipliedValues,
     rawSolution: solution
   };
 }
@@ -502,18 +516,17 @@ function formatPortfolioResult(result) {
     return;
   }
 
-  console.log("Objective Z:", result.result.toFixed(3));
+  console.log("Objective Z:", result.objective_Z.toFixed(3));
 
-  console.table(
-    ETF_ORDER.map((ticker) => ({
+  resultPercentageTable = ETF_ORDER.map((ticker) => ({
       ETF: ticker,
       Weight: `${result.weightsPercent[ticker].toFixed(2)}%`,
       Pi: result.compositeScores[ticker].toFixed(3)
-    }))
-  );
+    }));
+  
+  console.table(resultPercentageTable);
 
-  console.table(
-    Object.entries(result.constraintCheck).map(([name, item]) => ({
+  resultStatusAfterSolver = Object.entries(result.constraintCheck).map(([name, item]) => ({
       Constraint: name,
       Value: typeof item.value === "number" ? item.value.toFixed(4) : item.value,
       Required:
@@ -521,6 +534,38 @@ function formatPortfolioResult(result) {
           ? item.required.toFixed(4)
           : item.required,
       Status: item.ok ? "OK" : "Check"
-    }))
-  );
+  }));
+
+  console.table(resultStatusAfterSolver);
+}
+
+export function getResult(scores, scenario){
+  console.log("[getResult()] check Scenario : ", scenario);
+  console.log("[getResult()] check Scores : ", scores);
+    
+  const result = optimizePortfolio(scores, scenario, DEFAULT_PARAMS);
+
+  console.log("[getResult()] check Result Raw : ", result);
+
+  formatPortfolioResult(result);
+
+  console.log("[getResult()] check Result Return : ", result);
+
+  return result;
+}
+
+export function getResultPercentageTable(){
+  if(!resultPercentageTable){
+    return "Result Percentage Table이 존재하지 않습니다.";
+  }
+
+  return resultPercentageTable;
+}
+
+export function getResultStatusAfterSolver(){
+  if(!resultStatusAfterSolver){
+    return "Result Status After Solver가 존재하지 않습니다.";
+  }
+
+  return resultStatusAfterSolver;
 }

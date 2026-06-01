@@ -1,9 +1,11 @@
 import { getDateString } from "./util.js";
 import { getTxtResult } from "./util.js";
+import { getResult,getResultPercentageTable,getResultStatusAfterSolver } from "./solver_model.js";
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyauDmWhToMpGQQPQQIXVGVQubbyZH3Xut4G8Y8C7gKULLOCl4o3bNxvGqWwU1zD6eqhA/exec";
 
 var scenarioData;
+var scoresData;
 
 var htmlElement = document.documentElement;
 
@@ -135,6 +137,18 @@ async function getScenario() {
 //     return null;
 //   }
 // }
+
+async function getScores(){
+  const response = await fetch(SCRIPT_URL+"?action=getScores");
+
+  if(response.ok){
+    scoresData = await response.json();
+  } else {
+    console.error("Failed to load Scores data. Status:", response.status);
+  }
+  
+  console.log("Scores Data:", scoresData); // Check Scores Data
+}
 
 function showLoadingBox(loadingStr) { 
   document.getElementById("loadingOverlay").classList.add("show");
@@ -346,8 +360,186 @@ function saveResultAsTxt(){
   }
 }
 
+function createProcessTable(title, rows) {
+  const section = document.createElement("div");
+
+  const titleElement = document.createElement("h4");
+  titleElement.textContent = title;
+  section.appendChild(titleElement);
+
+  if (!rows || rows.length === 0) {
+    const emptyText = document.createElement("p");
+    emptyText.textContent = "No data";
+    section.appendChild(emptyText);
+    return section;
+  }
+
+  const table = document.createElement("table");
+  table.className = "hover-process-table";
+
+  const columns = Object.keys(rows[0]);
+
+  const thead = document.createElement("thead");
+  const headTr = document.createElement("tr");
+
+  columns.forEach(column => {
+    const th = document.createElement("th");
+    th.textContent = column;
+    headTr.appendChild(th);
+  });
+
+  thead.appendChild(headTr);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+
+  rows.forEach(row => {
+    const tr = document.createElement("tr");
+
+    columns.forEach(column => {
+      const td = document.createElement("td");
+      td.textContent = row[column];
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  section.appendChild(table);
+
+  return section;
+}
+
+function renderResultProcessPopup() {
+  const popup = document.querySelector("#result-process-popup");
+
+  if (!popup) return;
+
+  popup.innerHTML = "";
+
+  var weightPiRows = getResultPercentageTable();
+  console.log("Weight Pi Rows : ", weightPiRows);
+
+  var constraintRows = getResultStatusAfterSolver();
+  console.log("Constraint Check Rows : ", constraintRows);
+
+  popup.appendChild(
+    createProcessTable("ETF Weight / Pi", weightPiRows)
+  );
+
+  popup.appendChild(
+    createProcessTable("Constraint Check", constraintRows)
+  );
+}
+
+function initResultPopupHover() {
+  const LONG_PRESS_DELAY = 500;
+  const title = document.querySelector("#result-hover-title");
+  const popup = document.querySelector("#result-process-popup");
+
+  if (!title || !popup) return;
+
+  let hideTimer = null;
+  let longPressTimer = null;
+
+  function showPopup() {
+    clearTimeout(hideTimer);
+
+    const rect = title.getBoundingClientRect();
+
+    popup.style.left = `${rect.left + rect.width / 2}px`;
+    popup.style.top = `${rect.top - 12}px`;
+
+    popup.classList.add("show");
+  }
+
+  function hidePopup() {
+    hideTimer = setTimeout(() => {
+      popup.classList.remove("show");
+    }, 120);
+  }
+
+  function startLongPress(event) {
+    clearTimeout(longPressTimer);
+    clearTimeout(hideTimer);
+
+    longPressTimer = setTimeout(() => {
+      showPopup();
+
+      // 모바일에서 길게 눌렀을 때 텍스트 선택/기본 메뉴 방지용
+      event.preventDefault();
+    }, LONG_PRESS_DELAY);
+  }
+
+  function cancelLongPress() {
+    clearTimeout(longPressTimer);
+
+    hideTimer = setTimeout(() => {
+      popup.classList.remove("show");
+    }, 500);
+  }
+
+  title.addEventListener("mouseenter", showPopup);
+  title.addEventListener("mouseleave", hidePopup);
+
+  title.addEventListener("touchstart", startLongPress, { passive: false });
+  title.addEventListener("touchend", cancelLongPress);
+  title.addEventListener("touchcancel", cancelLongPress);
+
+  popup.addEventListener("mouseenter", () => {
+    clearTimeout(hideTimer);
+  });
+
+  popup.addEventListener("mouseleave", hidePopup);
+}
+
 function startModel(){
   // 모델 실행 로직 추가
+  var filterDataScenario = [
+    rInputElement.value,
+    sInputElement.value,
+    cInputElement.value,
+    hInputElement.value
+  ];
+
+  var filterDataScores = scoresData.data.map(row => row.slice(0, 5));
+
+  const inputtedScenario = {
+    R: Number(filterDataScenario[0]),
+    S: Number(filterDataScenario[1]),
+    C: Number(filterDataScenario[2]),
+    H: Number(filterDataScenario[3])
+  }
+
+  const inputtedScores = Object.fromEntries(
+    filterDataScores.map(row => {
+      const [ticker, R, S, C, H] = row;
+
+      return [ticker, { R: Number(R), S: Number(S), C: Number(C), H: Number(H) }];
+    })
+  )
+
+  const result = getResult(inputtedScores, inputtedScenario);
+
+  if(result){
+    var totalWeightSum = Object.values(result.weights).reduce((sum, weight) => sum + weight, 0);
+
+    spyValueP.textContent = result.results.SPY.value.toFixed(3);
+    qqqValueP.textContent = result.results.QQQ.value.toFixed(3);
+    qldValueP.textContent = result.results.QLD.value.toFixed(3);
+    jepiValueP.textContent = result.results.JEPI.value.toFixed(3);
+    schdValueP.textContent = result.results.SCHD.value.toFixed(3);
+    vnqValueP.textContent = result.results.VNQ.value.toFixed(3);
+    tltValueP.textContent = result.results.TLT.value.toFixed(3);
+    iauValueP.textContent = result.results.IAU.value.toFixed(3);  
+    objzValueP.textContent = result.objective_Z.toFixed(3);
+    totalWeightValueP.textContent = totalWeightSum.toFixed(3);
+
+    renderResultProcessPopup();
+    initResultPopupHover();
+  }
+
   // 결과 창 표시
   document.getElementsByClassName("result-contents")[0].classList.add("show");
 }
@@ -360,6 +552,7 @@ async function main(){
 
    try {
     await getScenario();
+    await getScores();
   } catch (error) {
     console.error("main error:", error);
   } finally {

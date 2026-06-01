@@ -64,8 +64,8 @@ main{
     width: 80%;
 
     /*부드러운 느낌 추가*/
+    position: relative;
     overflow: visible;
-
     z-index: 0;
 
     opacity: 0;
@@ -166,6 +166,94 @@ th, td { border: 1px solid #151515; padding: 8px; text-align: center; }
 }
 
 /* 결과 항목 설명글 */
+/* Result 제목 */
+.result-hover-title {
+    cursor: help;
+    display: inline-block;
+}
+
+/* body 직속 popup */
+.result-process-popup {
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: max-content;
+    max-width: min(720px, 90vw);
+    max-height: 480px;
+    overflow: auto;
+
+    padding: 16px;
+    border-radius: 14px;
+
+    background: #F8FAFC;
+    color: #0F172A;
+    border: 1px solid #CBD5E1;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.25);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    z-index: 10;
+
+    transform: translate(-50%, calc(-100% + 16px));
+
+    transition:
+        opacity 0.22s ease,
+        transform 0.22s ease,
+        visibility 0.22s ease;
+}
+
+.result-process-popup.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transform: translate(-50%, -100%);
+}
+
+/* popup 내부 table */
+.hover-process-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #FFFFFF;
+}
+
+.hover-process-table th,
+.hover-process-table td {
+    border: 1px solid #CBD5E1;
+    padding: 7px 10px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.hover-process-table th {
+    background: #E2E8F0;
+    color: #0F172A;
+    font-weight: 700;
+}
+
+.hover-process-table td {
+    color: #1E293B;
+}
+
+.hover-process-table tr:nth-child(even) {
+    background: #F8FAFC;
+}
+
+.result-process-popup h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #334155;
+}
+
+.result-process-popup h4:not(:first-child) {
+    margin-top: 18px;
+}
+
 .desc-text {
     position: relative;
     display: inline-block;
@@ -440,6 +528,36 @@ html.dark-mode{
         color: #111827;
         box-shadow: 0 6px 18px rgba(96, 165, 250, 0.5);
         transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .result-process-popup {
+        background: #1F2937;
+        color: #F8FAFC;
+        border-color: #475569;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    }
+
+    .result-process-popup h4{
+        color: #CBD5E1;
+    }
+
+    .hover-process-table {
+        background: #111827;
+    }
+
+    .hover-process-table th{
+        background: #334155;
+        color: #F8FAFC;
+        border-color: #475569;
+    }
+
+    .hover-process-table td{
+        color: #E5E7EB;
+        border-color: #475569;
+    }
+
+    .hover-process-table tr:nth-child(even) {
+        background: #1E293B;
     }
 
     .desc-text::after {
