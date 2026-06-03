@@ -342,17 +342,6 @@ function optimizePortfolio(scores, scenario, params = DEFAULT_PARAMS) {
     params
   );
 
-  const p_i_weights_multipliedValues = Object.fromEntries(
-    ETF_ORDER.map((ticker) => {
-      return [
-        ticker, 
-        {
-          value : compositeScores[ticker] * weights[ticker]
-        }
-      ];
-    })
-  );
-
   return {
     feasible: true,
     objective_Z: Number(solution.result || 0),
@@ -360,7 +349,6 @@ function optimizePortfolio(scores, scenario, params = DEFAULT_PARAMS) {
     weightsPercent,
     compositeScores,
     constraintCheck,
-    results : p_i_weights_multipliedValues,
     rawSolution: solution
   };
 }

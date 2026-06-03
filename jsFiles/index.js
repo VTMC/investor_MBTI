@@ -494,6 +494,19 @@ function initResultPopupHover() {
   popup.addEventListener("mouseleave", hidePopup);
 }
 
+function setResultValue(symbol, value) {
+    const desktopElement = document.getElementById(`${symbol}-value`);
+    const mobileElement = document.querySelector(`[data-mobile-value="${symbol}"]`);
+
+    if (desktopElement) {
+        desktopElement.textContent = value;
+    }
+
+    if (mobileElement) {
+        mobileElement.textContent = value;
+    }
+}
+
 function startModel(){
   // 모델 실행 로직 추가
   var filterDataScenario = [
@@ -525,16 +538,17 @@ function startModel(){
   if(result){
     var totalWeightSum = Object.values(result.weights).reduce((sum, weight) => sum + weight, 0);
 
-    spyValueP.textContent = result.results.SPY.value.toFixed(3);
-    qqqValueP.textContent = result.results.QQQ.value.toFixed(3);
-    qldValueP.textContent = result.results.QLD.value.toFixed(3);
-    jepiValueP.textContent = result.results.JEPI.value.toFixed(3);
-    schdValueP.textContent = result.results.SCHD.value.toFixed(3);
-    vnqValueP.textContent = result.results.VNQ.value.toFixed(3);
-    tltValueP.textContent = result.results.TLT.value.toFixed(3);
-    iauValueP.textContent = result.results.IAU.value.toFixed(3);  
-    objzValueP.textContent = result.objective_Z.toFixed(3);
-    totalWeightValueP.textContent = totalWeightSum.toFixed(3);
+    setResultValue("SPY", result.weightsPercent.SPY.toFixed(4));
+    setResultValue("QQQ", result.weightsPercent.QQQ.toFixed(4));
+    setResultValue("QLD", result.weightsPercent.QLD.toFixed(4));
+    setResultValue("JEPI", result.weightsPercent.JEPI.toFixed(4));
+    setResultValue("SCHD", result.weightsPercent.SCHD.toFixed(4));
+    setResultValue("VNQ", result.weightsPercent.VNQ.toFixed(4));
+    setResultValue("TLT", result.weightsPercent.TLT.toFixed(4));
+    setResultValue("IAU", result.weightsPercent.IAU.toFixed(4));
+
+    objzValueP.textContent = result.objective_Z.toFixed(4);
+    totalWeightValueP.textContent = totalWeightSum.toFixed(4);
 
     renderResultProcessPopup();
     initResultPopupHover();

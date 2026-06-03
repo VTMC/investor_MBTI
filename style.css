@@ -16,16 +16,24 @@ header {
 header h1 {
     margin: 0;
 
-    font-size: 2.5em;
+    /* PC/태블릿/모바일에서 자동으로 제목 크기 조절 */
+    font-size: clamp(1.6rem, 5vw, 2.5rem);
     font-weight: bold;
     letter-spacing: -0.5px;
+    line-height: 1.2;
 
     color: #1f2937;
     text-align: center;
 }
 
 main{
-    display: flex;  flex-direction: column;  align-items: center;  padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* 화면이 작아질수록 padding도 자연스럽게 축소 */
+    padding: clamp(12px, 3vw, 20px);
+    box-sizing: border-box;
 }
 
 .main-contents{
@@ -87,9 +95,26 @@ main{
 .selectors{ display : flex; gap: 10px; margin-bottom: 20px; flex-direction: column; align-items: center; flex-wrap: wrap;}
 .inputs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
 .inputs_inner { display: flex; flex-direction: column; align-items: center; }
-input{ width:120px; height: 5vh;}
-select {width:auto; height: 5vh;}
-button { padding: 10px 20px; cursor: pointer; }
+input{
+    width: clamp(90px, 18vw, 120px);
+    min-height: 40px;
+    height: clamp(40px, 5vh, 48px);
+    box-sizing: border-box;
+}
+
+select {
+    width: auto;
+    min-height: 40px;
+    height: clamp(40px, 5vh, 48px);
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+    min-height: 40px;
+    box-sizing: border-box;
+}
 
 #result-section {
     width: 100%; 
@@ -104,18 +129,49 @@ button { padding: 10px 20px; cursor: pointer; }
     text-align: center;
 }
 
-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-th, td { border: 1px solid #151515; padding: 8px; text-align: center; }
+/* 기본 상태: PC에서는 가로 테이블 표시, 모바일 테이블 숨김 */
+.desktop-result-table {
+    display: table;
+}
+
+.mobile-result-table {
+    display: none;
+}
+
+/* 결과 테이블 공통 */
+.desktop-result-table,
+.mobile-result-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.desktop-result-table th,
+.desktop-result-table td,
+.mobile-result-table th,
+.mobile-result-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.desktop-result-table p{
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.mobile-result-table p {
+    margin: 0;
+}
 
 .total-result-div{
     display: flex;
-    flex-direction: horizontal;
+    flex-direction: row;
     align-items: center;
 }
 
 .total-result-div div{
     display: flex;
-    flex-direction: horizontal;
+    flex-direction: row;
     align-items: center;
 
     border: 1px solid #151515;
@@ -151,9 +207,12 @@ th, td { border: 1px solid #151515; padding: 8px; text-align: center; }
 }
 
 #start-btn{
-    width: 50vh;
-    height: 8vh;
-    font-size: large;
+    /* 50vh 고정 폭 대신 화면 크기에 맞춰 자연스럽게 조절 */
+    width: clamp(220px, 50vw, 420px);
+    max-width: 100%;
+    min-height: 48px;
+    height: clamp(48px, 8vh, 64px);
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
     font-weight: bold;
     border-radius : 12px;
 }
@@ -447,7 +506,7 @@ html.dark-mode{
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
     }
 
-    th, td { border: 1px solid #f9fafb;}
+    /* th, td { border: 1px solid #f9fafb;} */
 
     .total-result-div div{
         border: 1px solid #f9fafb;
@@ -585,7 +644,256 @@ html.dark-mode{
 }
 
 
+/* 모바일/태블릿 반응형 보정 */
+@media (max-width: 900px) {
+    header {
+        padding: 16px 12px;
+    }
+
+    .main-contents {
+        padding: clamp(14px, 3vw, 24px);
+    }
+
+    .result-contents {
+        width: 92%;
+        padding: clamp(14px, 3vw, 22px);
+    }
+
+    .result-process-popup {
+        max-width: calc(100vw - 32px);
+        max-height: 70vh;
+    }
+}
+
 /* 모바일 대응 */
 @media (max-width: 600px) {
-    .inputs { flex-direction: column; align-items: center; }
+    header h1 {
+        font-size: clamp(1.45rem, 7vw, 2.1rem);
+        letter-spacing: -0.3px;
+        line-height: 1.2;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    .main-contents {
+        width: 100%;
+        padding: 16px 12px;
+        border-radius: 20px;
+    }
+
+    .result-contents {
+        width: 100%;
+        padding: 14px 10px;
+        border-radius: 0 0 20px 20px;
+
+        /*
+         * 결과 테이블/요약 영역이 길어질 수 있으므로
+         * 모바일에서는 height 제한을 풀어 내용이 잘리지 않게 처리
+         */
+        max-height: none;
+    }
+
+    .result-contents.show {
+        max-height: none;
+    }
+
+    .selectors {
+        width: 100%;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .inputs {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .inputs_inner {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    /*
+     * 모바일 브라우저에서 input font-size가 16px보다 작으면
+     * 자동 확대되는 경우가 있어서 16px 기준으로 고정
+     */
+    input,
+    select,
+    textarea {
+        width: 100%;
+        min-height: 44px;
+        height: auto;
+        font-size: 16px;
+    }
+
+    button {
+        min-height: 44px;
+        font-size: 1rem;
+    }
+
+    .button-container {
+        width: 100%;
+    }
+
+    #start-btn {
+        width: 100%;
+        max-width: 360px;
+        height: 52px;
+        font-size: 1rem;
+    }
+
+    #result-section {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    #result-section h2 {
+        font-size: clamp(1.25rem, 6vw, 1.7rem);
+    }
+
+    /*
+     * 결과 표가 화면보다 넓을 때 페이지 전체가 깨지지 않고
+     * 표 영역만 가로 스크롤되도록 처리
+     */
+    .result-contents {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .desktop-result-table {
+        display: none;
+    }
+
+    .mobile-result-table {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .mobile-result-table th,
+    .mobile-result-table td {
+        padding: 8px 4px;
+        font-size: clamp(0.75rem, 3.2vw, 0.95rem);
+        white-space: nowrap;
+    }
+
+    .mobile-result-table th {
+        width: 28%;
+        font-weight: 700;
+    }
+
+    .mobile-result-table td {
+        width: 22%;
+        font-weight: 600;
+    }
+
+    .mobile-result-table .desc-text {
+        max-width: 100%;
+    }
+
+    .mobile-result-table p {
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .total-result-div {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .total-result-div div {
+        width: 100%;
+        justify-content: space-between;
+        box-sizing: border-box;
+        margin: 4px 0;
+    }
+
+    .total-result-div h3,
+    .total-result-div p {
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .action-buttons {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .action-buttons button {
+        flex: 1 1 120px;
+    }
+
+    /*
+     * 모바일에서는 hover popup이 화면 밖으로 나가기 쉬워서
+     * 화면 폭 기준으로 강제 제한
+     */
+    .result-process-popup {
+        width: calc(100vw - 24px);
+        max-width: calc(100vw - 24px);
+        max-height: 70vh;
+        padding: 12px;
+        box-sizing: border-box;
+    }
+
+    .hover-process-table {
+        font-size: 12px;
+        min-width: max-content;
+    }
+
+    .hover-process-table th,
+    .hover-process-table td {
+        padding: 6px 8px;
+    }
+
+    .desc-text::after {
+        max-width: min(280px, 80vw);
+        font-size: 12px;
+    }
+
+    .save-box,
+    .loading-box {
+        width: calc(100vw - 48px);
+        max-width: 360px;
+        padding: 20px 16px;
+        box-sizing: border-box;
+    }
+
+    .spinner {
+        width: 36px;
+        height: 36px;
+    }
+
+    .theme-toggle-btn h1 {
+        font-size: 1.4em;
+    }
+}
+
+/* 아주 작은 모바일 화면 대응 */
+@media (max-width: 360px) {
+    header h1 {
+        font-size: clamp(1.3rem, 8vw, 1.7rem);
+    }
+
+    th,
+    td {
+        padding: 5px 6px;
+        font-size: 0.78rem;
+    }
+
+    .total-result-div h3,
+    .total-result-div p {
+        font-size: 0.88rem;
+    }
+
+    .action-buttons button {
+        flex-basis: 100%;
+    }
 }
