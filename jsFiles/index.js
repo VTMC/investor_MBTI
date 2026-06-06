@@ -201,33 +201,29 @@ function applyTheme(theme) {
 //   }
 // }
 
-function initTheme() {
+function getCurrentTheme() {
   var savedTheme = localStorage.getItem("theme");
 
   if (savedTheme === "dark" || savedTheme === "light") {
-    applyTheme(savedTheme);
-    return;
+    return savedTheme;
   }
 
-  var systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  //직접 설정하지 않았을 경우에는 시스템 테마를 적용함.
+  var systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 
-  if (systemDark) {
-    themeIcon.textContent = "🌙";
-  } else {
-    themeIcon.textContent = "☀️";
-  }
+  return systemTheme;
+}
+
+function initTheme() {
+  const currentTheme = getCurrentTheme();
+  applyTheme(currentTheme);
 }
 
 function toggleTheme() {
   themeToggleButton.addEventListener("click", function () {
-    var isDarkNow =
-      htmlElement.classList.contains("dark-mode") ||
-      (
-        !htmlElement.classList.contains("light-mode") &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      );
+    const currentTheme = getCurrentTheme();
 
-    if (isDarkNow) {
+    if (currentTheme === "dark") {
       applyTheme("light");
     } else {
       applyTheme("dark");
@@ -264,6 +260,16 @@ function setActiveButtonsFeature(){
   });
 
   startButton.addEventListener("click", function () {
+    var totalValue =  parseInt(rInputElement.value, 10) + 
+                      parseInt(sInputElement.value, 10) +  
+                      parseInt(cInputElement.value, 10) + 
+                      parseInt(hInputElement.value, 10);
+
+    if(totalValue != 100){
+      alert("The combined total value of R,S,C,H values must not exceed or fall below 100%");
+      return;
+    }
+
     startModel();
   });
 }

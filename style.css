@@ -479,7 +479,7 @@ button {
 }
 
 /*Dark Mode*/
-html.dark-mode{
+html.dark-mode {
     body {
         background: #111827;
         color: #f9fafb;
