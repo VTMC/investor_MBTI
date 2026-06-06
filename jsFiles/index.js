@@ -38,6 +38,8 @@ var iauValueP = document.getElementById("IAU-value");
 var objzValueP = document.getElementById("objective-z-value");
 var totalWeightValueP = document.getElementById("total-weight-value");
 
+var isItFirstOpenWebApp = true;
+
 function doGet() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = sheet.getDataRange().getValues();
@@ -202,10 +204,14 @@ function applyTheme(theme) {
 // }
 
 function getCurrentTheme() {
-  var savedTheme = localStorage.getItem("theme");
+  if(isItFirstOpenWebApp){
+    isItFirstOpenWebApp = false;
+  }else{
+    var savedTheme = localStorage.getItem("theme");
 
-  if (savedTheme === "dark" || savedTheme === "light") {
-    return savedTheme;
+    if (savedTheme === "dark" || savedTheme === "light") {
+      return savedTheme;
+    }
   }
 
   //직접 설정하지 않았을 경우에는 시스템 테마를 적용함.
