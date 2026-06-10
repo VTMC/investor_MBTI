@@ -20,6 +20,7 @@ var startButton = document.getElementById("start-btn");
 var restartButton = document.getElementById("restart_btn");
 var shareButton = document.getElementById("share_btn");
 var saveButton = document.getElementById("save_btn");
+var saveBoxCancelButton = document.getElementById("save-box-cancel-btn");
 var saveImgButton = document.getElementById("save-img-format-btn");
 var saveTxtButton = document.getElementById("save-text-format-btn");
 
@@ -241,29 +242,53 @@ function toggleTheme() {
 }
 
 function setActiveButtonsFeature(){
-  restartButton.addEventListener("click", function (){
+  restartButton.onclick = function (){
     location.reload();
-  });
+  };
 
-  shareButton.addEventListener("click", function() {
+  shareButton.onclick = function() {
+    var saveBoxTitle = document.querySelector(".save-box h2");
 
-  });
+    saveBoxTitle.textContent = "어떤 형태로 데이터를 공유합니까?"
 
-  saveButton.addEventListener("click", function() {
     showSaveFormatDataBox();
 
-    saveImgButton.addEventListener("click", function() {
+    saveBoxCancelButton.onclick = function() {
+      hideSaveFormatDataBox();
+    };
+
+    saveImgButton.onclick = function() {
+      hideSaveFormatDataBox();
+      
+      shareResultAsImage();
+    };
+
+    saveTxtButton.onclick = function() {
+      hideSaveFormatDataBox();
+
+      shareResultAsTxt();
+    };
+  };
+
+  saveButton.onclick = function() {
+    showSaveFormatDataBox();
+
+    saveBoxCancelButton.onclick = function() {
+      hideSaveFormatDataBox();
+    };
+
+    saveImgButton.onclick = function() {
       hideSaveFormatDataBox();
       
       saveResultAsImage();
-    });
+    };
 
-    saveTxtButton.addEventListener("click", function() {
+    saveTxtButton.onclick = function() {
       hideSaveFormatDataBox();
 
       saveResultAsTxt();
-    });
-  });
+    };
+  };
 
   startButton.addEventListener("click", function () {
     var totalValue =  parseInt(rInputElement.value, 10) + 
@@ -278,6 +303,152 @@ function setActiveButtonsFeature(){
 
     startModel();
   });
+}
+
+function canvasToBlob(canvas, type = "image/png", quality = 0.95) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error("Canvas toBlob failed"));
+    }, type, quality);
+  });
+}
+
+async function copyResultToClipboard(imageBlob, text) {
+  if (!navigator.clipboard) {
+    throw new Error("Clipboard API is not supported.");
+  }
+
+  // ClipboardItem이 지원되면 이미지 + 텍스트 + HTML 형태로 복사 시도
+  if (window.ClipboardItem && navigator.clipboard.write) {
+    // 이미지 단독 복사 fallback
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          "image/png": imageBlob
+        })
+      ]);
+
+      return;
+    } catch (error) {
+      console.warn("Image clipboard copy failed:", error);
+    }
+  }
+
+  // 텍스트 단독 복사 fallback
+  if (navigator.clipboard.writeText) {
+    await navigator.clipboard.writeText(text);
+    alert("이미지 복사는 지원되지 않아 텍스트만 클립보드에 복사되었습니다.");
+    return;
+  }
+
+  throw new Error("Clipboard copy is not supported.");
+}
+
+async function shareResultAsImage(){
+  const target = document.querySelector("main");
+
+  if (!target) {
+    throw new Error("Can't find capture Area!");
+  }
+
+  const canvas = await html2canvas(target, {
+    backgroundColor: "#ffffff",
+    scale: Math.max(window.devicePixelRatio || 1, 2),
+    useCORS: true,
+    scrollX: 0,
+    scrollY: -window.scrollY
+  });
+
+  try{
+    // 클립보드는 image/png가 가장 안정적임
+    const imageBlob = await canvasToBlob(canvas, "image/png");
+
+    const fileName = `${getDateString()}_investor_MBTI_Analyzer_Result.png`;
+
+    const imageFile = new File([imageBlob], fileName, {
+      type: "image/png"
+    });
+
+    const shareData = {
+      title: "Investor MBTI Analyzer Result",
+      files: [imageFile]
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      await navigator.share(shareData);
+    } else if(navigator.clipboard){
+      copyResultToClipboard(imageBlob, null);
+      alert("결과 파일을 클립보드에 복사했습니다.");
+    } else {
+      alert("이 브라우저에서는 이미지 공유를 지원하지 않습니다.");
+    }
+  }catch(error){
+    console.error(error);
+    alert("이미지 공유중 오류가 발생했습니다.");
+  }finally{
+    hideLoadingBox
+  }
+}
+
+async function shareResultAsTxt(){
+  var resultText = "";
+
+  resultText = getTxtResult(
+    selectElement.value,
+    rInputElement.value,
+    sInputElement.value,
+    cInputElement.value,
+    hInputElement.value,
+    spyValueP.textContent,
+    qqqValueP.textContent,
+    qldValueP.textContent,
+    jepiValueP.textContent,
+    schdValueP.textContent,
+    vnqValueP.textContent,
+    tltValueP.textContent,
+    iauValueP.textContent,
+    objzValueP.textContent,
+    totalWeightValueP.textContent
+  );
+
+  if(!resultText || resultText.trim === ""){
+    alert("Text data is empty.");
+    return;
+  }
+
+  showLoadingBox("saving txt...");
+
+  try{
+    const fileName = `${getDateString()}_investor_MBTI_Analyzer_Result.txt`;
+
+    const blob = new Blob(["\uFEFF" + resultText], {
+      type: "text/plain;charset=utf-8"
+    });
+
+    const txtFile = new File([blob], fileName, {
+      type: "text/plain"
+    });
+
+    const shareData = {
+      title: "Investor MBTI Analyzer Result",
+      files: [txtFile]
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      await navigator.share(shareData);
+    } else if(navigator.clipboard){
+      copyResultToClipboard(null, blob);
+      alert("결과 파일을 클립보드에 복사했습니다.");
+    } else {
+      alert("이 브라우저에서는 텍스트 공유를 지원하지 않습니다.");
+    }
+  }catch(error){
+    console.error(error);
+    alert("텍스트 공유중 오류가 발생했습니다.");
+  }finally{
+    hideLoadingBox();
+  }
 }
 
 async function saveResultAsImage(){
