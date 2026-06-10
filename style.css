@@ -551,6 +551,14 @@ html.dark-mode {
         background: rgba(0, 0, 0, 0.65);
     }
 
+    .save-box-cancel-btn-class{
+        background: transparent;
+    }
+
+    .save-box-cancel-btn-class img{
+        filter: brightness(0) invert(1);
+    }
+
     input,
     select,
     textarea {
